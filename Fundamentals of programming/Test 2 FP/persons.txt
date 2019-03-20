@@ -1,0 +1,10 @@
+1,nonvaccinated,ill
+2,nonvaccinated,healthy
+3,vaccinated,healthy
+4,nonvaccinated,healthy
+5,nonvaccinated,ill
+6,vaccinated,healthy
+7,nonvaccinated,healthy
+8,nonvaccinated,healthy
+9,vaccinated,healthy
+10,nonvaccinated,ill
