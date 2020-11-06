@@ -1,0 +1,10 @@
+def main(): void {
+    var s: Integer = 0;
+    val l: Array[Integer] = 1..100;
+    val n: Integer = intinput();
+
+    for (var i = 1; i < n; i += 1) {
+        s += l(i);
+    }
+    println(`Sum of numbers up to ${n} is ${s}`);
+}

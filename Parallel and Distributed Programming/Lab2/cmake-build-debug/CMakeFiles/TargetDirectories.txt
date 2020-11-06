@@ -1,0 +1,3 @@
+D:/Sem 5/PDP/Lab2/cmake-build-debug/CMakeFiles/Lab2.dir
+D:/Sem 5/PDP/Lab2/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/Sem 5/PDP/Lab2/cmake-build-debug/CMakeFiles/rebuild_cache.dir

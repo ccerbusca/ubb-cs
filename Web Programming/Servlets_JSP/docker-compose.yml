@@ -1,0 +1,15 @@
+version: '3.3'
+services:
+  postgresql:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+    - 15435:5432
+    volumes:
+    - postgres-web-lab-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-web-lab-data:

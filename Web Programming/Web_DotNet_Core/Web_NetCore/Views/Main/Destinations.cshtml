@@ -1,0 +1,55 @@
+﻿    
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<form action="AddBannedList" method="post">
+    <label for="name">Destination ID</label>
+    <input type="number" name="destinationID" />
+    <input type="submit"/>
+</form>
+
+<input type="text" id="search"/>
+
+<div id="data"></div>
+
+<button id="calc">Most popular</button>
+<div id="data2"></div>
+
+<script>
+    function groupBy(list, keyGetter) {
+        const map = new Map();
+        list.forEach((item) => {
+            const key = keyGetter(item);
+            const collection = map.get(key);
+            if (!collection) {
+                map.set(key, [item]);
+            } else {
+                collection.push(item);
+            }
+        });
+        return map;
+    }
+    $(document).ready(function () {
+        sessionStorage.setItem('saved', '[]');
+        $("#search").keyup(e => {
+            const q = $("#search").val();
+            $.get("/Main/FilterDestinations?q=" + q).done(function (data, status) {
+                $("#data").html(data);
+            });
+            $.get("/Main/FilterDestinationsJson?q=" + q).done(function (data, status) {
+                const previous = JSON.parse(sessionStorage.getItem('saved'));
+                data.forEach(line => previous.push(line));
+                sessionStorage.setItem('saved', JSON.stringify(previous));
+            });
+        });
+        $("#calc").click(e => {
+            const data = JSON.parse(sessionStorage.getItem('saved'));
+            const grouped = groupBy(data, line => line.destination);
+            const paired = [];
+            grouped.forEach((v, k) => paired.push([k, v]));
+            paired.sort((a, b) => b[1].length - a[1].length)
+            var s = '';
+            paired.slice(0, 3).forEach(el => s += "<div>" + el[1][0].id + ", " + el[1][0].destination + "," + el[1][0].country + "," + el[1][0].price + "</div>");
+            $("#data2").html(s)
+        });
+    })
+</script>

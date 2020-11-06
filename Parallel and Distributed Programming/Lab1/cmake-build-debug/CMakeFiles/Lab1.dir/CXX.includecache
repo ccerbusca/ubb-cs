@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+D:/Sem 5/PDP/Lab1/main.cpp
+iostream
+-
+utility
+-
+vector
+-
+numeric
+-
+algorithm
+-
+chrono
+-
+thread
+-
+mutex
+-
+ctime
+-
+random
+-
+cstdlib
+-
+string
+D:/Sem 5/PDP/Lab1/string
+memory
+-
+fstream
+-
+shared_mutex
+-
+

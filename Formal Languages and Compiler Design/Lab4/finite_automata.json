@@ -1,0 +1,26 @@
+{
+    "states": ["letter", "digit", "_", "initial"],
+    "alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789",
+    "initial_states": ["letter"],
+    "transitions": {
+        "initial": {
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ": "letter"
+        },
+        "letter": {
+            "0123456789": "digit",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ": "letter",
+            "_": "_"
+        },
+        "digit": {
+            "0123456789": "digit",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ": "letter",
+            "_": "_"
+        },
+        "_" : {
+            "0123456789": "digit",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ": "letter",
+            "_": "_"
+        }
+    },
+    "final_states": ["letter", "digit", "_"]
+}

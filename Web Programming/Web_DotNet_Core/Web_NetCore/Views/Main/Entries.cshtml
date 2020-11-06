@@ -1,0 +1,90 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@model FilterForm
+
+@{
+	ViewData["Title"] = "Entries";
+}
+
+<form action="Logout">
+	<input type="submit" value="Logout">
+</form>
+
+<h1>Entries</h1>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+
+@if (@HttpContextAccessor.HttpContext.Session.GetString("admin") == "yep")
+{
+	<div>
+		<div>
+			<label for="query">E-Mail</label>
+			<input type="text" id="query">
+		</div>
+		<label for="query_title">Title</label>
+		<input type="text" id="query_title">
+		<input type="submit" id="filter" value="Filter by author e-mail" style="display: inline;">
+	</div>
+}
+<br />
+@if (@HttpContextAccessor.HttpContext.Session.GetString("admin") == "nop")
+{
+	<form action="AddEntry" id="entry_form" method="post">
+		<textarea name="Content" id="entry" maxlength=500 style="display: block; margin-left:38px;"></textarea>
+		<label for="title">Title:</label>
+		<input type="text" name="Title" id="title">
+		<input type="submit" name="insert" value="Post">
+	</form>
+}
+	<div id="data"></div>
+	<button id="previous">Previous</button>
+	<button id="next">Next</button>
+	<p id="page">1</p>
+
+	<script>
+		$(document).ready(function () {
+			const mainpage = new Number($("#page").text());
+			$.get("/Main/GetEntries?page=" + mainpage).done(function (data, status) {
+				$("#data").html(data);
+			});
+			$("#previous").click(function () {
+				let page = new Number($("#page").text());
+				if (page == 1)
+					$(this).prop("disabled", true);
+				else {
+					const query = $("#query").val();
+					const qtitle = $("#query_title").val();
+					const data = { "Email": query, "Title": qtitle };
+					$.post("/Main/GetEntriesFiltered?page=" + (page - 1), data, function (response) {
+						$("#data").html(response);
+						$("#page").html(page - 1);
+					})
+				}
+			});
+			$("#next").click(function () {
+				let page = new Number($("#page").text());
+				$("#previous").prop("disabled", false)
+				const query = $("#query").val();
+				const qtitle = $("#query_title").val();
+				const data = { "Email": query, "Title": qtitle };
+				$.post("/Main/GetEntriesFiltered?page=" + (page + 1), data, function (response) {
+					$("#data").html(response);
+					$("#page").html(page + 1);
+				})
+			});
+			$("#filter").click(function () {
+				const query = $("#query").val();
+				const qtitle = $("#query_title").val();
+				const data = { "Email": query, "Title": qtitle };
+				$.post("/Main/GetEntriesFiltered?page=1", data, function (response) {
+					$("#data").html(response);
+				})
+			})
+			$(".delete").click(function () {
+				const id = $(this).id();
+				$.get("/Main/DeleteEntry/" + id).done(function () {
+					window.location.reload();
+				})
+			})
+		});
+	</script>

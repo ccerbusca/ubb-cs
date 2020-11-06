@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'war'
+    id 'org.springframework.boot' version '2.3.0.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '9.0.35'
+    compile group: 'javax.servlet', name: 'jstl', version: '1.2'
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    runtimeOnly 'org.postgresql:postgresql'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+}

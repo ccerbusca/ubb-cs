@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+D:/Sem 5/PDP/Lab2/ThreadSafeQueue.hpp
+condition_variable
+-
+condition_variable
+-
+
+D:/Sem 5/PDP/Lab2/main.cpp
+iostream
+-
+condition_variable
+-
+ThreadSafeQueue.hpp
+D:/Sem 5/PDP/Lab2/ThreadSafeQueue.hpp
+limits
+-
+
