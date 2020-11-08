@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Gallery</string>
+    <string name="search_hint">Search</string>
+    <string name="action_settings">Settings</string>
+    <string name="favourite">Favourite</string>
+    <string name="search_title">Search</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">PREVIOUS</string>
+    <string name="upload">UPLOAD IMAGE</string>
+    <string name="inputTitle">Input title</string>
+    <string name="inputDesc">Input description</string>
+    <string name="inputTag">Input tags</string>
+    <string name="save">SAVE TO GALLERY</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+</resources>
