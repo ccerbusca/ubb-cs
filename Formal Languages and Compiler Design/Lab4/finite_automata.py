@@ -65,25 +65,29 @@ class FiniteAutomaton:
 
     def __check_sequence(self):
         seq = input("Enter sequence...\n")
-        self.__check(seq)
+        if self.__check(seq):
+            print("Valid sequence")
+        else:
+            print("invalid sequence")
 
 
     def __check(self, sequence):
         state = "initial"
         for a in sequence:
             if a not in self._alphabet:
-                print("character '{}' not in alphabet".format(a))
-                return
+                return False
             try:
                 next_state = self._transitions[state][a]
             except KeyError:
-                print("invalid state transition from state {} with '{}'".format(state, a))
-                return
+                return False
             state = next_state
         if state not in self._final_states:
-            print("state {} is not a final state".format(state))
-            return
-        print("Valid sequence")
+            return False
+        return True
+    
+    def check(self, sequence):
+        return self.__check(sequence)
 
-fa = FiniteAutomaton("finite_automata_integer_constant.json")
-fa.menu()
+if __name__ == "__main__":
+    fa = FiniteAutomaton("finite_automata_integer_constant.json")
+    fa.menu()

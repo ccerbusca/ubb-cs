@@ -18,5 +18,5 @@
             "0123456789": "digit"
         }
     },
-    "final_states": ["digit", "zero"]
+    "final_states": ["digit", "zero", "nonzerodigit"]
 }
