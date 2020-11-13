@@ -1,0 +1,22 @@
+{
+    "states": ["sign", "nonzerodigit", "digit", "initial"],
+    "alphabet": "+-1234567890",
+    "initial_states": ["initial"],
+    "transitions": {
+        "initial": {
+            "-+": "sign",
+            "123456789" : "nonzerodigit",
+            "0": "zero"
+        },
+        "sign": {
+            "123456789" : "nonzerodigit"
+        },
+        "nonzerodigit": {
+            "0123456789": "digit"
+        },
+        "digit" : {
+            "0123456789": "digit"
+        }
+    },
+    "final_states": ["digit", "zero"]
+}

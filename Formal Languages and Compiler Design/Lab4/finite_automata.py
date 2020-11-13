@@ -14,6 +14,8 @@ class FiniteAutomaton:
             newdict = {}
             for ikey, ivalue in value.items():
                 for a in ikey:
+                    if a in newdict.keys() and newdict[a] != ikey:
+                        raise Exception("Automaton is not deterministic")
                     newdict[a] = ivalue
                 self._transitions[key] = newdict
                     
@@ -83,5 +85,5 @@ class FiniteAutomaton:
             return
         print("Valid sequence")
 
-fa = FiniteAutomaton("finite_automata.json")
+fa = FiniteAutomaton("finite_automata_integer_constant.json")
 fa.menu()
