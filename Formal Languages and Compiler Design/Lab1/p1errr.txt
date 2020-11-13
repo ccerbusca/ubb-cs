@@ -1,5 +1,5 @@
 def main(): void {
-    var s: Integer = 0;
+    var s: Integer = 09;
     val 3l: Array[Integer] = 1..100;
 
     for (var i = 1; i < l.length i += 1) {  
