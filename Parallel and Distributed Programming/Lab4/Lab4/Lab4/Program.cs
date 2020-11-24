@@ -12,18 +12,73 @@ namespace Lab4
 
     class Program
     {
-        static void Main(string[] args)
-        {
-            CountdownEvent cde = new CountdownEvent(1);
 
-            PageReader.Execute("www.cs.ubbcluj.ro", 80, (Socket s) => {
-                new Await(s, (string res) => {
-                    Console.WriteLine(res);
-                    cde.Signal();
-                }).readPage().Wait();
-            });
+        static void run_awaits(string[] hosts)
+        {
+            List<Task> tasks = new List<Task>();
+
+            var i = 0;
+            foreach (var host in hosts)
+            {
+                PageReader.Execute(host, 80, (Socket s) => {
+                    tasks.Add(new Await(s, (string res) =>
+                    {
+                        System.IO.File.WriteAllText(host + i++ + ".txt", res);
+                        Console.WriteLine(res);
+                    }).readPage());
+                });
+            }
+
+            Task.WaitAll(tasks.ToArray());
+        }
+
+        static void run_tasks(string[] hosts)
+        {
+            CountdownEvent cde = new CountdownEvent(hosts.Length);
+
+            var i = 0;
+            foreach (var host in hosts)
+            {
+                PageReader.Execute(host, 80, (Socket s) => {
+                    new Tasks(s, (string res) =>
+                    {
+                        System.IO.File.WriteAllText(host + i++ + ".txt", res);
+                        Console.WriteLine(res);
+                        cde.Signal();
+                    }).readPage();
+                });
+            }
 
             cde.Wait();
+        }
+
+        static void run_callbacks(string[] hosts)
+        {
+            CountdownEvent cde = new CountdownEvent(hosts.Length);
+
+            var i = 0;
+            foreach (var host in hosts)
+            {
+                PageReader.Execute(host, 80, (Socket s) => {
+                    new Tasks(s, (string res) =>
+                    {
+                        System.IO.File.WriteAllText(host + i++ + ".txt", res);
+                        Console.WriteLine(res);
+                        cde.Signal();
+                    }).readPage();
+                });
+            }
+
+            cde.Wait();
+        }
+
+
+
+        static void Main(string[] args)
+        {
+            string[] sites = { "www.google.ro", "www.google.ro", "www.cs.ubbcluj.ro" };
+
+            run_callbacks(sites);
 
             Console.ReadLine();
 
