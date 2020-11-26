@@ -3,7 +3,7 @@
     "terminals": ["a", "b"],
     "start_symbol": "S",
     "productions": {
-        "S": ["a", "a A", "b", "S b"],
-        "A": ["A a", "a"]
+        "S": ["A A"],
+        "A": ["a A", "b"]
     }
 }
