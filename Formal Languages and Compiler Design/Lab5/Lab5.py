@@ -20,6 +20,10 @@ class RHS:
     @property
     def has_dot(self):
         return self._dotpos != -1
+
+    @property
+    def is_dot_last(self):
+        return self.has_dot and self.item_after_dot == None
     
 
 
@@ -179,17 +183,80 @@ class Grammar:
     def col_can(self):
         c = []
         s0 = self.closure([("S_", RHS(s="S", dot_pos=0))])
-        c.append(s0)
+        c.append((-1, 0, 'S_'))
+
+        id_ = 1
+        states = {0: s0}
+
         i = 0
         while i < len(c):
-            s = c[i]
+            s = states[c[i][1]]
             ws = self._non_terminals + self._terminals
             for w in ws:
                 g = self.goto(s, w)
-                if g is not None and g not in c:
-                    c.append(g)
+                if g is not None:
+                    if next(filter(lambda x: x[0] == c[i][1] and x[2] == w and states[x[1]] == g, c), None) == None:
+                        if g not in states.values():
+                            states[id_] = g
+                            c.append((c[i][1], id_, w))
+                            id_ += 1
+                        else:
+                            c.append(
+                                (
+                                    c[i][1],
+                                    next(filter(lambda x: x[1] == g, states.items()))[0],
+                                    w
+                                )
+                            )
             i += 1
-        return c
+        return c, states
+
+    def __is_end_state(self, state):
+        return len(state) == 1 and state[0][1].is_dot_last
+    
+    def __is_extended_production(self, state):
+        return state[0][0] == "S_"
+
+    def __numbered_productions(self):
+        i = 0
+        productions = {}
+        for symbol, prods in self._productions.items():
+            for prod in prods:
+                productions[i] = (symbol, prod)
+                i += 1
+        return productions
+
+
+
+    def table(self, col_can, states):
+        productions = self.__numbered_productions()
+
+        print(productions)
+
+        actions = [None for i in range(len(states))]
+        goto = { symbol : [ None for i in range(len(states))] for symbol in self._terminals + self._non_terminals }
+
+
+        for i, state in states.items():
+            if self.__is_end_state(state):
+                if not self.__is_extended_production(state):
+                    for j, prod in productions.items():
+                        if prod[0] == state[0][0] and prod[1].items == state[0][1].items:
+                            actions[i] = "r{}".format(j)
+                            break
+                else:
+                    actions[i] = 'acc'
+            else:
+                actions[i] = 'shift'
+        
+        for g in col_can:
+            goto[g[2]][g[0]] = g[1]
+        
+
+
+        return actions, goto
+            
+
 
 
 
@@ -197,9 +264,16 @@ class Grammar:
 if __name__ == "__main__":
     grammar = Grammar("g1.txt")
 
+    col_can = grammar.col_can()
+    table = grammar.table(col_can[0], col_can[1])
     print(
-        '\n'.join(map(str, grammar.col_can()))
+        '\n'.join(map(str, col_can[0]))
+        + '\n\n' +
+        '\n'.join(map(str, col_can[1].items()))
     )
+
+    print(table[0])
+    print(table[1])
 
 
     
