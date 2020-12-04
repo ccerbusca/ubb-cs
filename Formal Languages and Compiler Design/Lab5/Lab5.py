@@ -250,11 +250,12 @@ class Grammar:
                 actions[i] = 'shift'
         
         for g in col_can:
-            goto[g[2]][g[0]] = g[1]
+            if g[0] != -1:
+                goto[g[2]][g[0]] = g[1]
         
 
 
-        return actions, goto
+        return actions, goto, productions
             
 
 
@@ -274,6 +275,15 @@ if __name__ == "__main__":
 
     print(table[0])
     print(table[1])
+
+    keys = table[1].keys()
+    print()
+
+    print(table[2])
+    print(" \taction\t{}".format('\t'.join(keys)))
+    for i in range(len(table[0])):
+        
+        print("{}\t{}\t{}".format(i, table[0][i], '\t'.join(map(lambda k: str(table[1][k][i]) , keys))))
 
 
     
