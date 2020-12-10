@@ -231,8 +231,6 @@ class Grammar:
     def table(self, col_can, states):
         productions = self.__numbered_productions()
 
-        print(productions)
-
         actions = [None for i in range(len(states))]
         goto = { symbol : [ None for i in range(len(states))] for symbol in self._terminals + self._non_terminals }
 
@@ -256,6 +254,33 @@ class Grammar:
 
 
         return actions, goto, productions
+
+    def parse(self, seq):
+        col_can = self.col_can()
+        actions, goto, productions = self.table(col_can[0], col_can[1])
+        working_stack = [0]
+
+        i = 0
+        while True:
+            if actions[working_stack[-1]] == 'shift':
+                if i  >= len(seq):
+                    return False
+                working_stack.append(seq[i])
+                working_stack.append(goto[seq[i]][working_stack[-2]])
+                i += 1
+            elif actions[working_stack[-1]].startswith('r'):
+                red = int(actions[working_stack[-1]][1:])
+                production = productions[red]
+                for _ in range(2 * len(production[1].items)):
+                    working_stack.pop()
+                working_stack.append(production[0])
+                working_stack.append(goto[production[0]][working_stack[-2]])
+            elif actions[working_stack[-1]] == 'acc':
+                return i == len(seq)
+            else:
+                return False
+                
+
             
 
 
@@ -284,6 +309,11 @@ if __name__ == "__main__":
     for i in range(len(table[0])):
         
         print("{}\t{}\t{}".format(i, table[0][i], '\t'.join(map(lambda k: str(table[1][k][i]) , keys))))
+
+    if grammar.parse("aaaaaaaaaaaaaaaaab"):
+        print("accepted")
+    else:
+        print("not accepted")
 
 
     
