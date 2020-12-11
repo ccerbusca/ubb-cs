@@ -1,53 +1,61 @@
 {
-    "terminals": ["program", "statement", "simple_statement", "variable_decl", "value", "range_decl", "array_element", "type",
+    "non_terminals": ["program", "statement", "simple_statement", "variable_decl", "value", "range_decl", "array_element", "type",
         "array_type", "variable_assign", "input_statement", "print_statement", "complex_statement", "if_stmt", "condition", "simple_condition",
         "boolean_operator", "expression", "arithmetic_op", "comparison_op", "while_stmt", "for_stmt", "break_stmt", "identifier", "letter", "digit", "integer_const",
-        "nonzerodigit", "character", "char", "string_const", "bool_const"],
-    "non_terminals": ["def", "main", "(", ")", ":", "void", "{", "}", ";", "var", "val", "=", "...", "0", "Integer", "String", "Char", "Boolean", "Array[", "[", "]",
+        "nonzerodigit", "character", "char", "string_const", "bool_const", "identifier_characters", "sign", "digits", "chars", "statements", "variable_decl_keywords",
+        "possible_values", "array_index", "unsigned_int", "condition_aux", "loop_statements", "print_functions"],
+    "terminals": ["def", "main():", "main", "(", ")", "()", ":", "void", "{", "}", ";", "var", "val", "=", "...", "0", "Integer", "String", "Char", "Boolean", "Array[", "[", "]",
                       "input()", "intinput()", "println(", "print(", "if", "else", "||", "&&", "+", "-", "/", "*", "%", "<", "<=", "==", "!=", ">=", ">", "while", "@",
-                      "for", "break", "_"],
-    "starting_symbol": "program",
+                      "for", "break", "_", "a", "b", "c", "d", "e", "f", "g" ,"h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+                      "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3",
+                      "4", "5", "6", "7", "8", "9", "'", "\"", "true", "false"],
+    "start_symbol": "program",
     "productions": {
-        "identifier": [],
+        "identifier": ["letter identifier_characters", "letter"],
+        "identifier_characters": ["letter", "letter identifier_characters", "digit", "digit identifier_characters", "_", "_ identifier_characters"],
         "letter": ["a", "b", "c", "d", "e", "f", "g" ,"h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
         "digit": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
         "nonzerodigit": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-        "integer_const": ["- nonzerodigit "]
+        "integer_const": ["sign nonzerodigit", "sign nonzerodigit digits", "0"],
+        "sign": ["-", "+"],
+        "digits": ["digit digits", "digit"],
+        "character": ["' char '"],
+        "char": ["letter", "digit"],
+        "string_const": ["\" chars \""],
+        "chars": ["char chars", "char"],
+        "bool_const": ["true", "false"],
+        "program": ["def main(): void { statements }", "def main () : void { }"],
+        "statements": ["statement statements", "statement"],
+        "statement": ["simple_statement ;", "complex_statement"],
+        "simple_statement": ["variable_decl", "variable_assign", "print_statement"],
+        "variable_decl": ["variable_decl_keywords identifier : type = possible_values"],
+        "variable_decl_keywords": ["val", "var"],
+        "possible_values": ["value", "range_decl", "input_statement"],
+        "value": ["integer_const", "character", "string_const", "identifier", "array_element", "expression"],
+        "range_decl": ["integer_const ... integer_const"],
+        "array_element": ["identifier ( array_index )"],
+        "array_index": ["unsigned_int", "identifier"],
+        "unsigned_int": ["nonzerodigit digits", "0"],
+        "type": ["Integer", "String", "Char", "Boolean", "array_type"],
+        "array_type": ["Array[ type ]"],
+        "variable_assign": ["identifier = value"],
+        "input_statement": ["input()", "intinput()"],
+        "print_statement": ["print_functions identifier )"],
+        "print_functions": ["print(", "println("],
+        "complex_statement": ["if_stmt", "while_stmt", "for_stmt"],
+        "if_stmt": ["if ( condition ) { statements }", "if ( condition ) { statements } else { statements }"],
+        "condition": ["simple_condition condition_aux", "simple_condition"],
+        "condition_aux": ["boolean_operator simple_condition condition_aux", "boolean_operator simple_condition"],
+        "simple_condition": ["expression comparison_op expression"],
+        "boolean_operator": ["||", "&&"],
+        "expression": ["value arithmetic_op ( expression )"],
+        "arithmetic_op": ["+", "-", "/", "*"],
+        "comparison_op": ["<",  "<=", "==",  "!=", ">=", ">"],
+        "while_stmt": ["while ( condition ) { loop_statements }", "while ( condition ) @ identifier { loop_statements }"],
+        "loop_statements": ["statements", "break_stmt"],
+        "for_stmt": ["for ( variable_decl ; condition ; statement ) { loop_statements }", "for ( variable_decl ; condition ; statement ) @ identifier { loop_statements }"],
+        "break_stmt": ["break", "break @ identifier"]
     }
 }
 
-identifier = letter { letter | digit | "_" }
-letter = "A" | "B" | ... | "Z" | "a" | "b" | ... | "z"
-digit = "0" | "1" | "2" | ... "9"
-integer_const = ["-" | "+"] nonzerodigit {digit} | "0"
-nonzerodigit = "1" | "2" | ... | "9"
-character = "'" char "'"
-char = letter | digit
-string_const = """ char {char} """
-bool_const = "true" | "false" 
-program = "def main(): void {" {statement} "}"
-statement = simple_statement ";" | complex_statement
-simple_statement = variable_decl | variable_assign | print_statement
-variable_decl = ("var" | "val") identifier ":" type "=" (value | range_decl | input_statement )
-value = integer_const | character | string_const | identifier | array_element | expression
-range_decl = integer_const "..." integer_const
-array_element = identifier "(" ((nonzerodigit {digit} | "0") | identifier) ")"
-type = "Integer" | "String" | "Char" | "Boolean" | array_type
-array_type = "Array[" type "]"
-variable_assign = identifier "=" value
-input_statement = "input()" | "intinput()"
-print_statement = ("println(" | "print(") identifier ")"
-complex_statement = if_stmt | while_stmt | for_stmt
-if_stmt = "if (" condition ") {" {statement} "}" [ "else {" {statement} "}"]
-condition = simple_condition { boolean_operator simple_condition }
-simple_condition = expression comparison_op expression
-boolean_operator = "||" | "&&"
-expression = value arithmetic_op "(" expression ")"
-arithmetic_op = "+" | "-" | "/" | "*"
-comparison_op = "<" | "<=" | "==" | "!=" | ">=" | ">"
-while_stmt = "while (" condition ")" ["@"identifier]
-"{ " {statement | break_stmt} "}"
-for_stmt = "for (" variable_decl "; " condition "; " statement ")" ["@"identifier]
-"{ " {statement | break_stmt} "}"
-break_stmt = "break" ["@"identifier]

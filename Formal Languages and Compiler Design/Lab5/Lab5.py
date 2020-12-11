@@ -1,5 +1,5 @@
 import json
-
+import re
 
 class RHS:
 
@@ -100,7 +100,7 @@ class Grammar:
                 for it in v:
                     for s in it:
                         if s not in self._non_terminals and s not in self._terminals:
-                            raise Exception("Production right hand side symbol not in non terminals")
+                            raise Exception("Production right hand side symbol not in non terminals {}".format(s))
         
         self.__menu = {
             "1": self.__non_terminals,
@@ -182,7 +182,7 @@ class Grammar:
     
     def col_can(self):
         c = []
-        s0 = self.closure([("S_", RHS(s="S", dot_pos=0))])
+        s0 = self.closure([("S_", RHS(s=self._start_symbol, dot_pos=0))])
         c.append((-1, 0, 'S_'))
 
         id_ = 1
@@ -260,14 +260,22 @@ class Grammar:
         actions, goto, productions = self.table(col_can[0], col_can[1])
         working_stack = [0]
 
+        derivations = [
+            ([0], seq, [])
+        ]
+        reductions = []
+
         i = 0
         while True:
+            print(working_stack)
             if actions[working_stack[-1]] == 'shift':
                 if i  >= len(seq):
+                    print("error on character {} ({})".format(seq[-1], len(seq) - 1))
                     return False
                 working_stack.append(seq[i])
                 working_stack.append(goto[seq[i]][working_stack[-2]])
                 i += 1
+                derivations.append((working_stack[:], seq[i:], reductions[:]))
             elif actions[working_stack[-1]].startswith('r'):
                 red = int(actions[working_stack[-1]][1:])
                 production = productions[red]
@@ -275,9 +283,20 @@ class Grammar:
                     working_stack.pop()
                 working_stack.append(production[0])
                 working_stack.append(goto[production[0]][working_stack[-2]])
+                reductions.append(red)
+                derivations.append((working_stack[:], seq[i:], reductions[:]))
             elif actions[working_stack[-1]] == 'acc':
-                return i == len(seq)
+                if i != len(seq):
+                    print("error on character {} ({})".format(seq[i if i < len(seq) else -1], i if i < len(seq) else len(seq) - 1))
+                    return False
+                else:
+                    print('\n'.join(map(str, derivations)))
+
+                    with(open("out.txt", "w+")) as f:
+                        f.write('\n'.join(map(str, derivations)))
+                    return True
             else:
+                print("error on character {} ({})".format(seq[i if i < len(seq) else -1], i if i < len(seq) else len(seq) - 1))
                 return False
                 
 
@@ -288,32 +307,36 @@ class Grammar:
 
 
 if __name__ == "__main__":
-    grammar = Grammar("g1.txt")
+    grammar = Grammar("g2.txt")
 
     col_can = grammar.col_can()
     table = grammar.table(col_can[0], col_can[1])
-    print(
-        '\n'.join(map(str, col_can[0]))
-        + '\n\n' +
-        '\n'.join(map(str, col_can[1].items()))
-    )
+    # print(
+    #     '\n'.join(map(str, col_can[0]))
+    #     + '\n\n' +
+    #     '\n'.join(map(str, col_can[1].items()))
+    # )
 
-    print(table[0])
-    print(table[1])
+    # print(table[0])
+    # print(table[1])
 
     keys = table[1].keys()
-    print()
+    # print()
 
-    print(table[2])
-    print(" \taction\t{}".format('\t'.join(keys)))
-    for i in range(len(table[0])):
+    # print(table[2])
+    # print(" \taction\t{}".format('\t'.join(keys)))
+    # for i in range(len(table[0])):
         
-        print("{}\t{}\t{}".format(i, table[0][i], '\t'.join(map(lambda k: str(table[1][k][i]) , keys))))
+    #     print("{}\t{}\t{}".format(i, table[0][i], '\t'.join(map(lambda k: str(table[1][k][i]) , keys))))
 
-    if grammar.parse("aaaaaaaaaaaaaaaaab"):
-        print("accepted")
-    else:
-        print("not accepted")
+    with open("..\\Lab1\\p1.txt") as f:
+        line = ''.join(f.readlines())
+        pattern = re.compile(r'\s+')
+        line = list(filter(lambda x: x != '' and x is not None, pattern.split(line)))
+        if not grammar.parse(line):
+            print("not accepted")
+        else:
+            print("accepted")
 
 
     
