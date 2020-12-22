@@ -1,6 +1,7 @@
 
 import 'dart:typed_data';
 
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class _ImageEntriesListState extends State<ImageEntriesList> {
   final GlobalKey<AnimatedListState> _listKey =
       GlobalKey<AnimatedListState>();
   ListModel<ImageEntry> _list;
+  ImageEntryProvider provider = ImageEntryProvider();
 
   @override
   void initState() {
@@ -31,6 +33,38 @@ class _ImageEntriesListState extends State<ImageEntriesList> {
       initialItems: <ImageEntry>[],
       removedItemBuilder: _buildRemovedItem,
     );
+    getInitialDataFromDB();
+    initializeBackgroundService();
+  }
+
+  @override
+  void dispose() {
+    provider.close().whenComplete(() => super.dispose());
+  }
+
+  void getInitialDataFromDB() async {
+    await provider.open('images.db');
+    List<ImageEntry> list  = await provider.getAll();
+    list.forEach((element) => _list.add(element));
+  }
+
+  void initializeBackgroundService() async {
+    BackgroundFetch.configure(BackgroundFetchConfig(
+      minimumFetchInterval: 1,
+      stopOnTerminate: false,
+      enableHeadless: true,
+      requiresBatteryNotLow: false,
+      requiresCharging: false,
+      requiresStorageNotLow: false,
+      requiresDeviceIdle: false,
+      requiredNetworkType: NetworkType.ANY
+    ), (String taskId) async {
+      await provider.batchDelete();
+      await provider.batchAdd();
+      BackgroundFetch.finish(taskId);
+    }).then((int status) {
+      print('[BackgroundFetch] configure success: $status');
+    });
   }
 
   Widget _buildItem(BuildContext context, int index, Animation<double> animation) {
@@ -71,18 +105,20 @@ class _ImageEntriesListState extends State<ImageEntriesList> {
     );
   }
 
-  _deleteItemHandler(ImageEntry entry) => () {
+  _deleteItemHandler(ImageEntry entry) => () async {
+    await provider.delete(entry.id);
     _list.removeAt(_list.indexOf(entry));
   };
 
   _editItemHandler(ImageEntry entry) => () async {
-
     final result = await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => UpdateImageEntryPage(entry))
     );
-    if (result != null)
+    if (result != null) {
       _list.update(entry, result);
+      await provider.update(result);
+    }
   };
 
   _navigateToAddPageAndAddEntry() async {
@@ -91,8 +127,10 @@ class _ImageEntriesListState extends State<ImageEntriesList> {
         MaterialPageRoute(builder: (context) => AddImageEntryPage())
     );
 
-    if (result != null)
+    if (result != null) {
+      await provider.insert(result);
       _list.add(result);
+    }
   }
 
 }
@@ -125,9 +163,6 @@ class ListModel<T> {
   void update(T old, T newI) {
     var index = _items.indexOf(old);
     _items[index] = newI;
-    // _items.replaceRange(0, _items.length,
-    //     _items.map((item) => item == old ? newI : old)
-    // );
   }
 
   T removeAt(int index) {

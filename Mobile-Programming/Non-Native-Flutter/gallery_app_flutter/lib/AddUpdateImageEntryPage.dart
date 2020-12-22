@@ -81,12 +81,16 @@ class _ImageEntryState<T extends StatefulWidget> extends State<T> {
 
   VoidCallback _save(BuildContext context) => () async {
     if (_validateInputs(context)) {
-      Navigator.pop(context, ImageEntry(
+      var entity = ImageEntry(
           title: _title,
           description: _description,
           tags: _tags.split(new RegExp(r"\s")),
           image: _entry == null || _image != null ? await _image.readAsBytes() : _bytes
-      ));
+      );
+      if (_entry != null) {
+        entity.id = _entry.id;
+      }
+      Navigator.pop(context, entity);
     }
   };
 
