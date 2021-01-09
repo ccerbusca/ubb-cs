@@ -24,7 +24,10 @@ class RHS:
     @property
     def is_dot_last(self):
         return self.has_dot and self.item_after_dot == None
-    
+
+    @property
+    def is_dot_first(self):
+        return self.has_dot and self._dotpos == 0  
 
 
     def increment_dot_pos(self):
@@ -226,6 +229,20 @@ class Grammar:
                 i += 1
         return productions
 
+    def __has_conflict(self, state):
+        dot_last = False
+        dot_middle = False
+        for item in state:
+            if item[1].is_dot_last:
+                if dot_last == True:
+                    return True
+                dot_last = True
+            if not item[1].is_dot_first and not item[1].is_dot_last:
+                dot_middle = True
+            if dot_last and dot_middle:
+                break
+        return dot_last and dot_middle
+
 
 
     def table(self, col_can, states):
@@ -307,7 +324,7 @@ class Grammar:
 
 
 if __name__ == "__main__":
-    grammar = Grammar("g2.txt")
+    grammar = Grammar("g2.json")
 
     col_can = grammar.col_can()
     table = grammar.table(col_can[0], col_can[1])
@@ -329,11 +346,20 @@ if __name__ == "__main__":
         
     #     print("{}\t{}\t{}".format(i, table[0][i], '\t'.join(map(lambda k: str(table[1][k][i]) , keys))))
 
-    with open("..\\Lab1\\p1.txt") as f:
-        line = ''.join(f.readlines())
-        pattern = re.compile(r'\s+')
-        line = list(filter(lambda x: x != '' and x is not None, pattern.split(line)))
-        if not grammar.parse(line):
+    # with open("seq.txt") as f:
+    #     line = ''.join(f.readlines())
+    #     pattern = re.compile(r'\s+')
+    #     line = list(filter(lambda x: x != '' and x is not None, pattern.split(line)))
+    #     if not grammar.parse(line):
+    #         print("not accepted")
+    #     else:
+    #         print("accepted")
+
+    with open("pif.out") as f:
+        # line = ''.join(f.readlines())
+        # pattern = re.compile(r'\s+')
+        # line = list(filter(lambda x: x != '' and x is not None, pattern.split(line)))
+        if not grammar.parse(list(map(lambda x: x.strip(), f.readlines()))):
             print("not accepted")
         else:
             print("accepted")

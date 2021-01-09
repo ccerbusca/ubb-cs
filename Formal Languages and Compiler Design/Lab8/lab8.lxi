@@ -1,0 +1,107 @@
+%{ 	 
+#include <stdio.h>
+#include <string.h>
+int lines = 0;
+%} 
+
+%option noyywrap
+%option caseless
+
+DIGIT 		[0-9]
+WORD		\"[a-zA-Z0-9]*\"
+TEMPLATE    \`[a-zA-Z0-9${} ]*\`
+NUMBER		[+-]?[1-9][0-9]*|0
+CHARACTER 	\'[a-zA-Z0-9]\'
+CONST		{WORD}|{NUMBER}|{CHARACTER}
+IDENTIFIER 		[a-zA-Z]|[a-zA-Z][a-zA-Z0-9_]
+
+%%
+
+var            {printf("Reserved word: %s\n", yytext);}
+val              {printf("Reserved word: %s\n", yytext);}
+def            {printf("Reserved word: %s\n", yytext);}
+for               {printf("Reserved word: %s\n", yytext);}
+while             {printf("Reserved word: %s\n", yytext);}
+if             {printf("Reserved word: %s\n", yytext);}
+else             {printf("Reserved word: %s\n", yytext);}
+println               {printf("Reserved word: %s\n", yytext);}
+print              {printf("Reserved word: %s\n", yytext);}
+Char             {printf("Reserved word: %s\n", yytext);}
+intinput             {printf("Reserved word: %s\n", yytext);}
+input             {printf("Reserved word: %s\n", yytext);}
+break             {printf("Reserved word: %s\n", yytext);}
+String             {printf("Reserved word: %s\n", yytext);}
+void             {printf("Reserved word: %s\n", yytext);}
+Integer             {printf("Reserved word: %s\n", yytext);}
+Boolean             {printf("Reserved word: %s\n", yytext);}
+Array             {printf("Reserved word: %s\n", yytext);}
+main             {printf("Reserved word: %s\n", yytext);}
+
+
+
+
+
+
+{IDENTIFIER}	{printf( "Identifier: %s\n", yytext );}
+
+{CONST}	{printf( "Constant: %s\n", yytext );}
+{TEMPLATE}	{printf( "Constant: %s\n", yytext );}
+
+
+";"	    {printf( "Separator: %s\n", yytext );}
+":"	    {printf( "Separator: %s\n", yytext );}
+"{"	    {printf( "Separator: %s\n", yytext );}
+"}"	    {printf( "Separator: %s\n", yytext );}
+"("	    {printf( "Separator: %s\n", yytext );}
+")"	    {printf( "Separator: %s\n", yytext );}
+"["	    {printf( "Separator: %s\n", yytext );}
+"]"	    {printf( "Separator: %s\n", yytext );}
+
+"+"	    {printf( "Operator: %s\n", yytext );}
+"-"	    {printf( "Operator: %s\n", yytext );}
+"*"	    {printf( "Operator: %s\n", yytext );}
+"/"	    {printf( "Operator: %s\n", yytext );}
+"="	    {printf( "Operator: %s\n", yytext );}
+"=="	    {printf( "Operator: %s\n", yytext );}
+"!="	    {printf( "Operator: %s\n", yytext );}
+"<"	    {printf( "Operator: %s\n", yytext );}
+"<="	    {printf( "Operator: %s\n", yytext );}
+">"	    {printf( "Operator: %s\n", yytext );}
+">="	    {printf( "Operator: %s\n", yytext );}
+"+="	    {printf( "Operator: %s\n", yytext );}
+"-="	    {printf( "Operator: %s\n", yytext );}
+"*="	    {printf( "Operator: %s\n", yytext );}
+"/="	    {printf( "Operator: %s\n", yytext );}
+"%"	    {printf( "Operator: %s\n", yytext );}
+".."	    {printf( "Operator: %s\n", yytext );}
+"||"	    {printf( "Operator: %s\n", yytext );}
+"&&"	    {printf( "Operator: %s\n", yytext );}
+
+
+
+[ \t]+  	{}
+
+[0-9^][a-zA-Z0-9]	{printf("Illegal identifier at line %d. %s\n", yylineno, yytext);}
+		 
+[+-]?0[0-9]+ {printf("Illegal constant at line %d. %s\n", yylineno, yytext);}
+
+
+\"[a-zA-Z0-9] {printf("Expected end of string on line %d. %s\n", yylineno, yytext); }
+
+%%
+void main(int argc,char** argv)
+{
+if (argc > 1)
+{
+    FILE *file;
+    file = fopen(argv[1], "r");
+    if (!file)
+    {
+        fprintf(stderr, "Could not open %s\n", argv[1]);
+        exit(1);
+    }
+    yyin = file;
+}
+
+yylex();
+}

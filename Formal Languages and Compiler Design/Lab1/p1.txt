@@ -1,9 +1,9 @@
 
 
 def main(): void {
-    val x: Integer = intinput();
-    val y: Integer = intinput();
-    val z: Integer = intinput();
+    val x : Integer = intinput();
+    val y : Integer = intinput();
+    val z : Integer = intinput();
 
     if (x > y) {
         if (x > z) {

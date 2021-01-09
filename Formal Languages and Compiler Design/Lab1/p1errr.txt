@@ -5,5 +5,5 @@ def main(): void {
     for (var i = 1; i < l.length i += 1) {  
         s += l(i);
     }
-    println(`Sum of numbers up to ${n} is ${s});
+    println("Sum of numbers up to ${n} is ${s});
 }

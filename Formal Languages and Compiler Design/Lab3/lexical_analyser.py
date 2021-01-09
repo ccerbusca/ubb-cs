@@ -17,6 +17,9 @@ class PIF:
     def __str__(self):
         return "\n".join(map(str, self.__data))
 
+    def tokens(self):
+        return list(map(lambda x: x[0], self.__data))
+
 def is_constant_or_identifier(token):
     try:
         int(token)
@@ -30,13 +33,12 @@ def is_constant_or_identifier(token):
     return True
 
 
-pif = PIF()
-st = SymbolTable()
 
-if len(sys.argv) != 2:
-    raise Exception("Only 1 parameter allowed")
-else:
-    with open(sys.argv[1]) as f:
+
+def lexical_analyser(path):
+    pif = PIF()
+    st = SymbolTable()
+    with open(path) as f:
         line_i = 1
         line = f.readline()
         while line:
@@ -73,11 +75,21 @@ else:
                     raise Exception("Lexical error. Invalid token: '{}' on line {}".format(token, line_i))
             line = f.readline()
             line_i += 1
+    return st, pif
+    
 
 
-print(st, "\n")
-print(pif)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        raise Exception("Only 1 parameter allowed")
+    else:
+        st, pif = lexical_analyser(sys.argv[1])
+        print(st, "\n")
+        print(pif)
 
-print("Valid program!")
+        with open("pif.out", "w+") as f:
+            f.write('\n'.join(pif.tokens()))
+
+        print("Valid program!")
 
 

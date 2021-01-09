@@ -25,7 +25,7 @@
         "string_const": ["\" chars \""],
         "chars": ["char chars", "char"],
         "bool_const": ["true", "false"],
-        "program": ["def main(): void { statements }", "def main () : void { }"],
+        "program": ["def main ( ) : void { statements }", "def main ( ) : void { }"],
         "statements": ["statement statements", "statement"],
         "statement": ["simple_statement ;", "complex_statement"],
         "simple_statement": ["variable_decl", "variable_assign", "print_statement"],
