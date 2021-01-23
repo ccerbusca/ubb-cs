@@ -1,0 +1,6 @@
+﻿Fizica;1
+Chimie;2
+Engleza;3
+PDP;1
+PDP;2
+PDP;3
